@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_tokens.dart';
 import 'app_components.dart';
+import 'app_illustrations.dart';
 
 /// A shimmering placeholder block.
 ///
@@ -177,43 +178,22 @@ class SkeletonDashboard extends StatelessWidget {
   }
 }
 
-/// Abstract decorative mark used by the empty and error states. Softer than a
-/// large stock icon, and themed rather than illustrative.
-class _StateGlyph extends StatelessWidget {
-  const _StateGlyph({required this.icon, required this.tone});
-
-  final IconData icon;
-  final Color tone;
-
-  @override
-  Widget build(BuildContext context) {
-    // A restrained tinted square rather than an illustration or a large icon.
-    return Container(
-      width: 52,
-      height: 52,
-      decoration: BoxDecoration(
-        color: Theme.of(context).c.wash(tone),
-        borderRadius: BorderRadius.circular(AppRadius.md),
-      ),
-      child: Icon(icon, size: 24, color: tone),
-    );
-  }
-}
-
 /// Designed empty state with a headline, guidance and an optional action.
 class EmptyState extends StatelessWidget {
   const EmptyState({
     super.key,
     required this.title,
     required this.message,
-    this.icon = Icons.inbox_rounded,
+    this.art = AppArt.tasks,
     this.actionLabel,
     this.onAction,
   });
 
   final String title;
   final String message;
-  final IconData icon;
+
+  /// Which vector object to show above the copy.
+  final AppArt art;
   final String? actionLabel;
   final VoidCallback? onAction;
 
@@ -227,8 +207,8 @@ class EmptyState extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _StateGlyph(icon: icon, tone: theme.colorScheme.primary),
-              const SizedBox(height: AppSpacing.xl),
+              AppIllustration(art: art, size: 88),
+              const SizedBox(height: AppSpacing.lg),
               Text(
                 title,
                 style: theme.textTheme.titleLarge,
@@ -270,13 +250,13 @@ class ErrorStateView extends StatelessWidget {
     required this.message,
     this.title = 'Something went wrong',
     this.onRetry,
-    this.icon = Icons.cloud_off_rounded,
+    this.art = AppArt.error,
   });
 
   final String message;
   final String title;
   final VoidCallback? onRetry;
-  final IconData icon;
+  final AppArt art;
 
   @override
   Widget build(BuildContext context) {
@@ -288,8 +268,8 @@ class ErrorStateView extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _StateGlyph(icon: icon, tone: theme.colorScheme.error),
-              const SizedBox(height: AppSpacing.xl),
+              AppIllustration(art: art, size: 88),
+              const SizedBox(height: AppSpacing.lg),
               Text(
                 title,
                 style: theme.textTheme.titleLarge,

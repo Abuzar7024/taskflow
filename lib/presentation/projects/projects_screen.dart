@@ -13,6 +13,7 @@ import '../tasks/task_providers.dart';
 import '../widgets/brand.dart';
 import '../widgets/common.dart';
 import '../widgets/offline_banner.dart';
+import '../widgets/app_illustrations.dart';
 import '../widgets/state_views.dart';
 import 'project_providers.dart';
 
@@ -42,7 +43,7 @@ class ProjectsScreen extends ConsumerWidget {
               ),
               data: (items) => items.isEmpty
                   ? EmptyState(
-                      icon: Icons.folder_outlined,
+                      art: AppArt.projects,
                       title: 'No projects yet',
                       message:
                           'Create your first project to start organising work.',
@@ -173,7 +174,7 @@ class ProjectCard extends ConsumerWidget {
                     ),
                     AppChip(
                       label: project.status.label,
-                      icon: Icons.circle,
+                      icon: Icons.checklist_rtl_rounded,
                       tone: project.status.color(theme),
                       dense: true,
                     ),

@@ -8,6 +8,7 @@ import '../../core/theme/app_tokens.dart';
 import '../../core/utils/formatters.dart';
 import '../../domain/entities/entities.dart';
 import '../providers.dart';
+import '../widgets/app_illustrations.dart';
 import '../widgets/state_views.dart';
 import 'notification_providers.dart';
 
@@ -40,7 +41,7 @@ class NotificationsScreen extends ConsumerWidget {
         ),
         data: (items) => items.isEmpty
             ? const EmptyState(
-                icon: Icons.notifications_none,
+                art: AppArt.inbox,
                 title: 'No notifications',
                 message:
                     'When someone assigns you a task, it will show up here.',

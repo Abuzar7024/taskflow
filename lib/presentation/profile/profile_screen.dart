@@ -5,196 +5,151 @@ import 'package:go_router/go_router.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_tokens.dart';
 import '../../domain/entities/entities.dart';
-import '../../domain/entities/permissions.dart';
+import '../../domain/entities/session.dart';
 import '../auth/auth_controller.dart';
 import '../providers.dart';
 import '../tasks/task_providers.dart';
+import '../widgets/app_illustrations.dart';
+import '../widgets/app_settings.dart';
 import '../widgets/common.dart';
 
+/// Profile overview: identity, then grouped entry points into the settings
+/// screens. Each group is one page section, not a separate card stack.
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final session = ref.watch(sessionProvider);
-    final theme = Theme.of(context);
+    final c = Theme.of(context).c;
     final themeMode = ref.watch(themeModeProvider);
     final devSettings = ref.watch(devSettingsProvider);
-    final members = ref.watch(orgMembersProvider).valueOrNull;
+    final memberCount = ref.watch(orgMembersProvider).valueOrNull?.length;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg,
-          AppSpacing.lg,
-          AppSpacing.lg,
-          AppSpacing.xxl,
-        ),
-        children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Row(
-                children: [
-                  UserAvatar(
-                    user: User(
-                      id: session.userId,
-                      name: session.name,
-                      email: session.email,
-                      avatarUrl: session.avatarUrl,
-                    ),
-                    radius: 28,
-                  ),
-                  const SizedBox(width: AppSpacing.lg),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(session.name, style: theme.textTheme.titleMedium),
-                        const SizedBox(height: 2),
-                        Text(
-                          session.email,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+      body: SafeArea(
+        bottom: false,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.sm,
+            AppSpacing.lg,
+            AppSpacing.huge,
           ),
-          const SizedBox(height: AppSpacing.lg),
+          children: [
+            _ProfileHeader(session: session),
+            const SizedBox(height: AppSpacing.xl),
 
-          const SectionHeader(title: 'Organization'),
-          const SizedBox(height: AppSpacing.sm),
-          Card(
-            child: Column(
+            AppSection(
+              title: 'Account',
               children: [
-                _InfoTile(
-                  icon: Icons.apartment,
-                  label: 'Organization',
-                  value: session.orgName,
+                AppSettingsTile(
+                  icon: Icons.person_outline_rounded,
+                  label: 'Profile information',
+                  onTap: () => context.push(Routes.accountSettings),
                 ),
-                const Divider(height: 1),
-                _InfoTile(
-                  icon: session.isAdmin
-                      ? Icons.shield_outlined
-                      : Icons.person_outline,
-                  label: 'Your role',
+                AppSettingsTile(
+                  icon: Icons.badge_outlined,
+                  label: 'Role',
                   value: session.role.label,
+                  showChevron: false,
                 ),
-                const Divider(height: 1),
-                _InfoTile(
-                  icon: Icons.groups_outlined,
-                  label: 'Members',
-                  value: members == null ? '—' : '${members.length}',
-                ),
-                if (Permissions.canManageMembers(session)) ...[
-                  const Divider(height: 1),
-                  Padding(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.verified_user_outlined,
-                          size: 16,
-                          color: theme.colorScheme.primary,
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: Text(
-                            'As an admin you can delete projects and manage members.',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ],
             ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: AppSpacing.xl),
 
-          const SectionHeader(title: 'Appearance'),
-          const SizedBox(height: AppSpacing.sm),
-          Card(
-            child: RadioGroup<ThemeMode>(
-              groupValue: themeMode,
-              onChanged: (value) => ref
-                  .read(themeModeProvider.notifier)
-                  .set(value ?? ThemeMode.system),
-              child: Column(
-                children: [
-                  for (final mode in ThemeMode.values)
-                    RadioListTile<ThemeMode>(
-                      value: mode,
-                      title: Text(switch (mode) {
-                        ThemeMode.system => 'Match system',
-                        ThemeMode.light => 'Light',
-                        ThemeMode.dark => 'Dark',
-                      }),
-                      dense: true,
-                    ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-
-          const SectionHeader(title: 'Developer'),
-          const SizedBox(height: AppSpacing.sm),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.bug_report_outlined),
-              title: const Text('Developer tools'),
-              subtitle: Text(
-                devSettings.isDefault
-                    ? 'Simulate offline mode and errors'
-                    : 'Simulation active',
-                style: TextStyle(
-                  color: devSettings.isDefault
-                      ? null
-                      : theme.colorScheme.tertiary,
-                  fontWeight: devSettings.isDefault ? null : FontWeight.w600,
+            AppSection(
+              title: 'Workspace',
+              children: [
+                AppSettingsTile(
+                  icon: Icons.apartment_rounded,
+                  label: 'Organization',
+                  value: session.orgName,
+                  showChevron: false,
                 ),
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.push(Routes.developerTools),
+                AppSettingsTile(
+                  icon: Icons.group_outlined,
+                  label: 'Members',
+                  value: memberCount == null ? null : '$memberCount',
+                  onTap: () => context.push(Routes.members),
+                ),
+                AppSettingsTile(
+                  icon: Icons.folder_outlined,
+                  label: 'Projects',
+                  onTap: () => context.go(Routes.projects),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: AppSpacing.xl),
+            const SizedBox(height: AppSpacing.xl),
 
-          OutlinedButton.icon(
-            onPressed: () => _confirmLogout(context, ref),
-            icon: Icon(Icons.logout, size: 18, color: theme.colorScheme.error),
-            label: Text(
-              'Sign out',
-              style: TextStyle(color: theme.colorScheme.error),
+            AppSection(
+              title: 'Preferences',
+              children: [
+                AppSettingsTile(
+                  icon: Icons.contrast_rounded,
+                  label: 'Theme',
+                  value: switch (themeMode) {
+                    ThemeMode.light => 'Light',
+                    ThemeMode.dark => 'Dark',
+                    ThemeMode.system => 'System',
+                  },
+                  onTap: () => context.push(Routes.themeSettings),
+                ),
+                AppSettingsTile(
+                  icon: Icons.notifications_none_rounded,
+                  label: 'Notifications',
+                  onTap: () => context.push(Routes.notifications),
+                ),
+              ],
             ),
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(
-                color: theme.colorScheme.error.withValues(alpha: 0.5),
-              ),
+            const SizedBox(height: AppSpacing.xl),
+
+            AppSection(
+              title: 'Security',
+              children: [
+                AppSettingsTile(
+                  icon: Icons.shield_outlined,
+                  label: 'Session',
+                  onTap: () => context.push(Routes.sessionSettings),
+                ),
+                AppSettingsTile(
+                  icon: Icons.logout_rounded,
+                  label: 'Sign out',
+                  tone: c.error,
+                  showChevron: false,
+                  onTap: () => _signOut(context, ref),
+                ),
+              ],
             ),
-          ),
-        ],
+            const SizedBox(height: AppSpacing.xl),
+
+            AppSection(
+              title: 'Developer',
+              description: devSettings.isDefault
+                  ? 'Simulate network failures and offline mode to review how '
+                        'the app handles them.'
+                  : 'Simulation is active — reset it to restore normal '
+                        'behaviour.',
+              children: [
+                AppSettingsTile(
+                  icon: Icons.science_outlined,
+                  label: 'Developer tools',
+                  value: devSettings.isDefault ? null : 'Active',
+                  onTap: () => context.push(Routes.developerTools),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Future<void> _confirmLogout(BuildContext context, WidgetRef ref) async {
+  Future<void> _signOut(BuildContext context, WidgetRef ref) async {
     final confirmed = await confirmAction(
       context,
       title: 'Sign out?',
-      message:
-          'You will need to sign in again to see your projects and tasks.',
+      message: 'You will need to sign in again to reach your workspace.',
       confirmLabel: 'Sign out',
     );
     if (!confirmed) return;
@@ -202,49 +157,92 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
-class _InfoTile extends StatelessWidget {
-  const _InfoTile({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
+/// Identity block: avatar, name, email, and the organization/role pair.
+class _ProfileHeader extends StatelessWidget {
+  const _ProfileHeader({required this.session});
 
-  final IconData icon;
-  final String label;
-  final String value;
+  final Session session;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.lg,
-        vertical: AppSpacing.md,
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: theme.colorScheme.onSurfaceVariant),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Text(
-              label,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+    final c = theme.c;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            UserAvatar(
+              user: User(
+                id: session.userId,
+                name: session.name,
+                email: session.email,
+                avatarUrl: session.avatarUrl,
+              ),
+              size: 64,
+            ),
+            const SizedBox(width: AppSpacing.lg),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    session.name,
+                    style: theme.textTheme.headlineSmall,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: AppSpacing.xxs),
+                  Text(
+                    session.email,
+                    style: theme.textTheme.bodyMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
             ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        Container(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          decoration: BoxDecoration(
+            color: c.surfaceAccent,
+            borderRadius: AppRadius.card,
           ),
-          Flexible(
-            child: Text(
-              value,
-              textAlign: TextAlign.end,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
+          child: Row(
+            children: [
+              const AppIllustration(art: AppArt.workspace, size: 52),
+              const SizedBox(width: AppSpacing.lg),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      session.orgName,
+                      style: theme.textTheme.titleMedium,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: AppSpacing.xxs),
+                    Text(
+                      session.role.label,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        letterSpacing: 0.6,
+                        fontWeight: FontWeight.w700,
+                        color: c.primary,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

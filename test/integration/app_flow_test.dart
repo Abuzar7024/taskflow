@@ -8,6 +8,8 @@ import 'package:taskflow/presentation/auth/auth_controller.dart';
 import 'package:taskflow/presentation/providers.dart';
 import 'package:taskflow/presentation/tasks/task_card.dart';
 
+import 'package:taskflow/presentation/widgets/app_bottom_nav.dart';
+
 import '../support/harness.dart';
 
 /// End-to-end flows driven through the real router and screens, against the
@@ -22,13 +24,11 @@ Future<void> settle(WidgetTester tester, [int frames = 12]) async {
 }
 
 /// Taps a bottom-navigation destination by index.
-///
-/// The destinations render their labels internally, so the icon is the
-/// reliable hit target.
 Future<void> tapNav(WidgetTester tester, int index) async {
-  final destination = find.byType(NavigationDestination).at(index);
+  final bar = find.byType(AppBottomNav);
+  expect(bar, findsOneWidget, reason: 'the shell should show the nav bar');
   await tester.tap(
-    find.descendant(of: destination, matching: find.byType(Icon)).first,
+    find.descendant(of: bar, matching: find.byType(InkWell)).at(index),
   );
   await settle(tester);
 }

@@ -3,71 +3,91 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/router/app_router.dart';
+import '../notifications/notification_providers.dart';
+import '../widgets/app_bottom_nav.dart';
 
-/// Bottom-navigation frame around the four primary sections.
+/// Navigation frame around the five primary sections.
 ///
-/// On wide screens the bar is replaced by a side rail so a tablet does not
-/// waste horizontal space.
+/// Phones get the bottom bar; tablets a collapsed rail; large tablets and
+/// landscape an extended rail with labels — an adaptive layout rather than a
+/// stretched phone one.
 class AppShell extends ConsumerWidget {
   const AppShell({required this.location, required this.child, super.key});
 
   final String location;
   final Widget child;
 
-  static const _destinations = [
-    (route: Routes.dashboard, icon: Icons.space_dashboard_outlined,
-     selectedIcon: Icons.space_dashboard, label: 'Home'),
-    (route: Routes.projects, icon: Icons.folder_outlined,
-     selectedIcon: Icons.folder, label: 'Projects'),
-    (route: Routes.tasks, icon: Icons.check_circle_outline,
-     selectedIcon: Icons.check_circle, label: 'Tasks'),
-    (route: Routes.notifications, icon: Icons.notifications_none_rounded,
-     selectedIcon: Icons.notifications_rounded, label: 'Inbox'),
-    (route: Routes.profile, icon: Icons.person_outline,
-     selectedIcon: Icons.person, label: 'Profile'),
+  static const _routes = [
+    Routes.dashboard,
+    Routes.projects,
+    Routes.tasks,
+    Routes.notifications,
+    Routes.profile,
   ];
 
   /// Highlights the section that owns the current location, so a nested route
   /// such as `/projects/proj_1001` keeps "Projects" selected.
   int get _selectedIndex {
-    final index = _destinations.lastIndexWhere(
-      (d) => location == d.route || location.startsWith('${d.route}/'),
+    final index = _routes.lastIndexWhere(
+      (r) => location == r || location.startsWith('$r/'),
     );
     return index < 0 ? 0 : index;
   }
 
   void _onSelect(BuildContext context, int index) {
-    final destination = _destinations[index];
+    final route = _routes[index];
     // Re-tapping the active tab returns to that section's root.
-    if (index == _selectedIndex && location != destination.route) {
-      context.go(destination.route);
+    if (index == _selectedIndex && location != route) {
+      context.go(route);
       return;
     }
-    if (index != _selectedIndex) context.go(destination.route);
+    if (index != _selectedIndex) context.go(route);
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final useRail = MediaQuery.sizeOf(context).width >= 720;
+    final unread = ref.watch(unreadNotificationCountProvider);
+    final width = MediaQuery.sizeOf(context).width;
 
-    if (useRail) {
+    final items = [
+      const NavItem(
+        icon: Icons.grid_view_outlined,
+        activeIcon: Icons.grid_view_rounded,
+        label: 'Home',
+      ),
+      const NavItem(
+        icon: Icons.folder_outlined,
+        activeIcon: Icons.folder_rounded,
+        label: 'Projects',
+      ),
+      const NavItem(
+        icon: Icons.check_circle_outline_rounded,
+        activeIcon: Icons.check_circle_rounded,
+        label: 'Tasks',
+      ),
+      NavItem(
+        icon: Icons.notifications_none_rounded,
+        activeIcon: Icons.notifications_rounded,
+        label: 'Inbox',
+        badgeCount: unread,
+      ),
+      const NavItem(
+        icon: Icons.person_outline_rounded,
+        activeIcon: Icons.person_rounded,
+        label: 'Profile',
+      ),
+    ];
+
+    if (width >= 720) {
       return Scaffold(
         body: Row(
           children: [
-            NavigationRail(
+            AppNavRail(
+              items: items,
               selectedIndex: _selectedIndex,
-              onDestinationSelected: (i) => _onSelect(context, i),
-              labelType: NavigationRailLabelType.all,
-              destinations: [
-                for (final d in _destinations)
-                  NavigationRailDestination(
-                    icon: Icon(d.icon),
-                    selectedIcon: Icon(d.selectedIcon),
-                    label: Text(d.label),
-                  ),
-              ],
+              onSelect: (i) => _onSelect(context, i),
+              extended: width >= 1000,
             ),
-            const VerticalDivider(width: 1),
             Expanded(child: child),
           ],
         ),
@@ -76,17 +96,10 @@ class AppShell extends ConsumerWidget {
 
     return Scaffold(
       body: child,
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: AppBottomNav(
+        items: items,
         selectedIndex: _selectedIndex,
-        onDestinationSelected: (i) => _onSelect(context, i),
-        destinations: [
-          for (final d in _destinations)
-            NavigationDestination(
-              icon: Icon(d.icon),
-              selectedIcon: Icon(d.selectedIcon),
-              label: d.label,
-            ),
-        ],
+        onSelect: (i) => _onSelect(context, i),
       ),
     );
   }

@@ -16,6 +16,7 @@ import '../tasks/task_card.dart';
 import '../tasks/task_providers.dart';
 import '../tasks/task_status_sheet.dart';
 import '../widgets/common.dart';
+import '../widgets/app_illustrations.dart';
 import '../widgets/state_views.dart';
 import 'project_controller.dart';
 import 'project_providers.dart';
@@ -192,7 +193,7 @@ class _ProjectBody extends ConsumerWidget {
                         vertical: AppSpacing.xl,
                       ),
                       child: EmptyState(
-                        icon: Icons.checklist,
+                        art: AppArt.tasks,
                         title: 'No tasks yet',
                         message: 'Add the first task to get this project moving.',
                         actionLabel: 'Add a task',
@@ -253,11 +254,12 @@ class _ProjectSummary extends StatelessWidget {
                 TagChip(
                   label: project.status.label,
                   icon: Icons.circle,
+                  tone: project.status.color(theme),
                   dense: true,
                 ),
                 TagChip(
                   label: 'Created ${Dates.full(project.createdAt)}',
-                  icon: Icons.schedule,
+                  icon: Icons.event_outlined,
                   dense: true,
                 ),
               ],
@@ -313,7 +315,7 @@ class _TaskStatistics extends StatelessWidget {
                   TagChip(
                     label: '${stats.overdue} overdue',
                     color: AppColors.error,
-                    icon: Icons.event_busy,
+                    icon: Icons.error_outline_rounded,
                     dense: true,
                   ),
               ],

@@ -9,6 +9,7 @@ import '../../domain/entities/entities.dart';
 import '../../domain/entities/task_filter.dart';
 import '../projects/project_providers.dart';
 import '../widgets/offline_banner.dart';
+import '../widgets/app_illustrations.dart';
 import '../widgets/state_views.dart';
 import 'task_card.dart';
 import 'task_filter_sheet.dart';
@@ -92,7 +93,7 @@ class _TaskListBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (all.isEmpty) {
       return EmptyState(
-        icon: Icons.checklist,
+        art: AppArt.tasks,
         title: 'No tasks yet',
         message: 'Tasks you create will show up here.',
         actionLabel: projectNames.isEmpty ? null : 'Create a task',
@@ -106,7 +107,7 @@ class _TaskListBody extends ConsumerWidget {
 
     if (visible.isEmpty) {
       return EmptyState(
-        icon: Icons.filter_alt_off_outlined,
+        art: AppArt.tasks,
         title: 'No tasks found',
         message: 'No tasks match your filters. Try widening or clearing them.',
         actionLabel: 'Clear filters',

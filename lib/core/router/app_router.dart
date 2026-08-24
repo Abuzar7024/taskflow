@@ -9,6 +9,7 @@ import '../../presentation/auth/splash_screen.dart';
 import '../../presentation/dashboard/dashboard_screen.dart';
 import '../../presentation/notifications/notifications_screen.dart';
 import '../../presentation/profile/developer_tools_screen.dart';
+import '../../presentation/profile/settings_screens.dart';
 import '../../presentation/profile/profile_screen.dart';
 import '../../presentation/projects/project_detail_screen.dart';
 import '../../presentation/projects/project_form_screen.dart';
@@ -30,6 +31,10 @@ abstract final class Routes {
   static const profile = '/profile';
   static const notifications = '/notifications';
   static const developerTools = '/profile/developer';
+  static const accountSettings = '/profile/account';
+  static const themeSettings = '/profile/theme';
+  static const sessionSettings = '/profile/session';
+  static const members = '/profile/members';
 
   static String project(String id) => '/projects/$id';
   static String newProject() => '/projects/new';
@@ -120,6 +125,26 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.developerTools,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const DeveloperToolsScreen(),
+      ),
+      GoRoute(
+        path: Routes.accountSettings,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AccountSettingsScreen(),
+      ),
+      GoRoute(
+        path: Routes.themeSettings,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const ThemeSettingsScreen(),
+      ),
+      GoRoute(
+        path: Routes.sessionSettings,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const SessionSettingsScreen(),
+      ),
+      GoRoute(
+        path: Routes.members,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const MembersScreen(),
       ),
 
       ShellRoute(
