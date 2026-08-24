@@ -174,9 +174,10 @@ flutter test test/integration     # end-to-end flows
 flutter analyze                   # static analysis
 ```
 
-185 tests covering session and token logic, authorization and tenant isolation, filtering,
+203 tests covering session and token logic, authorization and tenant isolation, filtering,
 search, validation, repository behaviour, the loading/empty/error/success states, and
-end-to-end flows. No test touches a real network.
+end-to-end flows, plus responsive checks that assert no overflow on a small phone, a large
+phone, a tablet and in landscape. No test touches a real network.
 
 > Widget and integration tests use `pump` with explicit durations rather than `pumpAndSettle`.
 > The skeleton loaders animate continuously, so the frame loop never goes idle and
@@ -284,7 +285,7 @@ and would need conflict resolution to be honest.
 
 ## Verification
 
-`flutter analyze` reports no issues, `flutter test` passes all 185 tests, and
+`flutter analyze` reports no issues, `flutter test` passes all 203 tests, and
 `flutter build apk --release` produces an APK.
 
 The app has been run on a physical device (Samsung Galaxy S24, Android 16): login, session
@@ -292,4 +293,5 @@ restore, dashboard, project and task lists, task detail and the profile/settings
 render and resolve correctly, with no runtime exceptions in logcat.
 
 Not verified on real hardware: tablet and landscape layouts, iOS, and the full matrix of
-simulated error states — those are covered by the test suite rather than manual device testing.
+simulated error states. Layout at those sizes is asserted by the responsive test suite rather
+than by manual device testing.
