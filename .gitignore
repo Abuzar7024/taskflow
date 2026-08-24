@@ -48,3 +48,20 @@ app.*.map.json
 android/key.properties
 *.jks
 *.keystore
+
+# Internal working documents, excluded from the published repository.
+REQUIREMENTS.md
+ARCHITECTURE.md
+
+# Local build and tooling artifacts
+*.apk
+*.aab
+/build/
+.gradle/
+local.properties
+.cxx/
+*.hprof
+
+# OS noise
+Thumbs.db
+desktop.ini
