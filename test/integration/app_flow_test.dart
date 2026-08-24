@@ -9,6 +9,7 @@ import 'package:taskflow/presentation/providers.dart';
 import 'package:taskflow/presentation/tasks/task_card.dart';
 
 import 'package:taskflow/presentation/widgets/app_bottom_nav.dart';
+import 'package:taskflow/presentation/widgets/app_settings.dart';
 
 import '../support/harness.dart';
 
@@ -323,7 +324,17 @@ void main() {
       await tapNav(tester, navProfile);
 
       await scrollTo(tester, find.text('Sign out'));
-      await tester.tap(find.text('Sign out').first);
+      // Tap the settings row rather than its label: the label sits in a
+      // Flexible whose centre may fall outside the painted text.
+      final signOutRow = find
+          .ancestor(
+            of: find.text('Sign out'),
+            matching: find.byType(AppSettingsTile),
+          )
+          .first;
+      await tester.ensureVisible(signOutRow);
+      await settle(tester);
+      await tester.tap(signOutRow, warnIfMissed: false);
       await settle(tester);
 
       // Confirm the dialog.
