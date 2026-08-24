@@ -67,6 +67,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isAuthRoute =
           location == Routes.login || location == Routes.register;
 
+      // Developer tools stay reachable while signed out: the Unauthorized
+      // simulation ends the session, and its own switch would otherwise be
+      // stranded behind the login wall.
+      if (location == Routes.developerTools) return null;
+
       // Hold on the splash screen until the stored session has been read.
       if (auth.status == AuthStatus.unknown) {
         return location == Routes.splash ? null : Routes.splash;

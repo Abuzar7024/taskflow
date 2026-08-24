@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/constants/dev_settings.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_tokens.dart';
 import '../../core/utils/validators.dart';
 import '../widgets/brand.dart';
+import '../providers.dart';
 import '../widgets/common.dart';
 import 'auth_controller.dart';
 import 'demo_accounts_sheet.dart';
@@ -59,6 +61,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = ref.watch(authControllerProvider);
+    final devSettings = ref.watch(devSettingsProvider);
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -88,6 +91,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                         if (auth.error != null) ...[
                           InlineErrorBanner(message: auth.error!),
+                          const SizedBox(height: AppSpacing.lg),
+                        ],
+
+                        // A live simulation can block sign-in entirely, so
+                        // offer the reset right where the user is stuck.
+                        if (!devSettings.isDefault) ...[
+                          _SimulationNotice(settings: devSettings),
                           const SizedBox(height: AppSpacing.lg),
                         ],
 
@@ -152,6 +162,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           icon: const Icon(Icons.people_outline, size: 18),
                           label: const Text('Use a demo account'),
                         ),
+                        const SizedBox(height: AppSpacing.sm),
+                        TextButton.icon(
+                          onPressed: () => context.push(Routes.developerTools),
+                          icon: const Icon(Icons.science_outlined, size: 18),
+                          label: const Text('Developer options'),
+                        ),
                         const SizedBox(height: AppSpacing.xl),
 
                         // Wrap rather than Row so the prompt and the action
@@ -182,6 +198,78 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             );
           },
         ),
+      ),
+    );
+  }
+}
+
+/// Explains that a simulation is active and offers a one-tap reset.
+///
+/// Shown on the login screen because the Unauthorized simulation signs the
+/// user out, which would otherwise make the setting unreachable.
+class _SimulationNotice extends ConsumerWidget {
+  const _SimulationNotice({required this.settings});
+
+  final DevSettings settings;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final c = theme.c;
+
+    final active = [
+      if (settings.failure != SimulatedFailure.none) settings.failure.label,
+      if (settings.offline) 'Offline mode',
+      if (settings.slowNetwork) 'Slow network',
+    ].join(' · ');
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: c.wash(c.warning),
+        borderRadius: AppRadius.field,
+        border: Border.all(color: c.warning.withValues(alpha: 0.35)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.science_outlined, size: 18, color: c.warning),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Text(
+                  'Simulation active',
+                  style: theme.textTheme.titleSmall?.copyWith(color: c.warning),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            '$active. This can block sign-in until you turn it off.',
+            style: theme.textTheme.bodySmall,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+              onPressed: () {
+                ref.read(devSettingsProvider.notifier).reset();
+                showAppSnackBar(context, 'Simulation reset. Try signing in.');
+              },
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: AppSpacing.xs,
+                ),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: const Text('Reset simulation'),
+            ),
+          ),
+        ],
       ),
     );
   }

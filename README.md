@@ -174,7 +174,7 @@ flutter test test/integration     # end-to-end flows
 flutter analyze                   # static analysis
 ```
 
-203 tests covering session and token logic, authorization and tenant isolation, filtering,
+208 tests covering session and token logic, authorization and tenant isolation, filtering,
 search, validation, repository behaviour, the loading/empty/error/success states, and
 end-to-end flows, plus responsive checks that assert no overflow on a small phone, a large
 phone, a tablet and in landscape. No test touches a real network.
@@ -231,6 +231,10 @@ restarts, so remember to reset them.
 | **Validation error** | Select, create or edit a task | The form shows a field-level error and a snackbar; reads still succeed |
 | **Unauthorized (401)** | Select, open Tasks | The token-refresh path runs; because the mock refresh also returns 401, you are signed out with "Your session expired." |
 
+Because the Unauthorized simulation ends the session, the login screen keeps a **Developer
+options** link and shows a **Simulation active** notice with a one-tap **Reset simulation**
+button — so a reviewer can never get locked out by their own toggle.
+
 To see an **empty state**, sign in as Daniel (Harborlight Studios) and delete its four tasks,
 or search for a project that does not exist.
 
@@ -285,7 +289,7 @@ and would need conflict resolution to be honest.
 
 ## Verification
 
-`flutter analyze` reports no issues, `flutter test` passes all 203 tests, and
+`flutter analyze` reports no issues, `flutter test` passes all 208 tests, and
 `flutter build apk --release` produces an APK.
 
 The app has been run on a physical device (Samsung Galaxy S24, Android 16): login, session
