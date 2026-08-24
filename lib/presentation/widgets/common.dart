@@ -20,9 +20,10 @@ class StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return AppChip(
       label: status.label,
-      tone: status.color,
+      tone: status.color(theme),
       icon: status.icon,
       dense: dense,
     );
@@ -38,9 +39,10 @@ class PriorityChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return AppChip(
       label: priority.label,
-      tone: priority.color,
+      tone: priority.color(theme),
       icon: priority.icon,
       dense: dense,
     );
@@ -74,10 +76,10 @@ class DueDateChip extends StatelessWidget {
     final overdue = isOverdue ?? task?.isOverdue(now) ?? false;
     final dueToday = task?.isDueToday(now) ?? false;
     final tone = overdue
-        ? AppPalette.coral
+        ? AppColors.error
         : dueToday
-        ? AppPalette.amber
-        : Theme.of(context).surfaces.textMuted;
+        ? AppColors.warning
+        : Theme.of(context).c.textMuted;
 
     return AppChip(
       label: Dates.relativeDay(due, now),
@@ -111,13 +113,13 @@ class UserAvatar extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Theme.of(context).surfaces.cardElevated,
-          border: Border.all(color: Theme.of(context).surfaces.border),
+          color: Theme.of(context).c.surfaceRaised,
+          border: Border.all(color: Theme.of(context).c.border),
         ),
         child: Icon(
           Icons.person_outline_rounded,
           size: size * 0.5,
-          color: Theme.of(context).surfaces.textMuted,
+          color: Theme.of(context).c.textMuted,
         ),
       );
     }
@@ -133,11 +135,11 @@ class UserAvatar extends StatelessWidget {
   /// Stable per-user accent so the same person keeps the same colour.
   static Color _toneFor(String id) {
     const palette = [
-      AppPalette.indigo,
-      AppPalette.cyan,
-      AppPalette.violet,
-      AppPalette.emerald,
-      AppPalette.amber,
+      AppColors.primaryBlue,
+      AppColors.mediumBlue,
+      AppColors.deepBlue,
+      AppColors.success,
+      AppColors.warning,
     ];
     return palette[id.hashCode.abs() % palette.length];
   }
@@ -171,8 +173,8 @@ class AssigneeLabel extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.labelMedium?.copyWith(
                 color: user == null
-                    ? theme.surfaces.textMuted
-                    : theme.surfaces.textSecondary,
+                    ? theme.c.textMuted
+                    : theme.c.textMuted,
               ),
             ),
           ),
@@ -224,7 +226,7 @@ class CompletionBar extends StatelessWidget {
         ],
         AppProgressBar(
           value: ratio,
-          gradient: theme.surfaces.brandGradient,
+          
         ),
         if (showCaption && stats != null) ...[
           const SizedBox(height: AppSpacing.sm),
@@ -252,7 +254,7 @@ class InlineErrorBanner extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: theme.surfaces.tint(theme.colorScheme.error),
+          color: theme.c.wash(theme.colorScheme.error),
           borderRadius: AppRadius.field,
           border: Border.all(
             color: theme.colorScheme.error.withValues(alpha: 0.32),

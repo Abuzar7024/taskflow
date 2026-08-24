@@ -57,7 +57,8 @@ Future<void> scrollTo(WidgetTester tester, Finder finder) async {
 const navHome = 0;
 const navProjects = 1;
 const navTasks = 2;
-const navProfile = 3;
+const navInbox = 3;
+const navProfile = 4;
 
 Future<ProviderContainer> pumpApp(WidgetTester tester) async {
   // Pin a phone-sized surface: the default 800x600 test window is wide

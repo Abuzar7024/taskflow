@@ -220,25 +220,25 @@ class _StatsGrid extends StatelessWidget {
       (
         label: 'Projects',
         value: '${data.projectCount}',
-        color: AppPalette.electric,
+        color: AppColors.primaryBlue,
         icon: Icons.folder_outlined,
       ),
       (
         label: 'Open tasks',
         value: '${stats.open}',
-        color: AppPalette.amber,
+        color: AppColors.warning,
         icon: Icons.pending_actions,
       ),
       (
         label: 'Completed',
         value: '${stats.completed}',
-        color: AppPalette.emerald,
+        color: AppColors.success,
         icon: Icons.task_alt,
       ),
       (
         label: 'Overdue',
         value: '${stats.overdue}',
-        color: AppPalette.coral,
+        color: AppColors.error,
         icon: Icons.event_busy,
       ),
     ];
@@ -297,7 +297,7 @@ class _StatTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.sm),
               decoration: BoxDecoration(
-                color: Theme.of(context).surfaces.tint(color),
+                color: Theme.of(context).c.wash(color),
                 borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               child: Icon(icon, size: 16, color: color),

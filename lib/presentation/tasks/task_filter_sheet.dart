@@ -172,7 +172,7 @@ class _TaskFilterSheetState extends State<_TaskFilterSheet> {
                             avatar: Icon(
                               status.icon,
                               size: 16,
-                              color: status.color,
+                              color: status.color(theme),
                             ),
                             selected: _draft.statuses.contains(status),
                             onSelected: (_) => _toggleStatus(status),
@@ -193,7 +193,7 @@ class _TaskFilterSheetState extends State<_TaskFilterSheet> {
                             avatar: Icon(
                               priority.icon,
                               size: 16,
-                              color: priority.color,
+                              color: priority.color(theme),
                             ),
                             selected: _draft.priorities.contains(priority),
                             onSelected: (_) => _togglePriority(priority),

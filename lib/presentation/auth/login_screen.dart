@@ -62,19 +62,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      body: AuroraBackground(
-        child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(AppSpacing.xl),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - AppSpacing.xl * 2,
+                  maxWidth: 420,
+                ),
                 child: Center(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight - AppSpacing.xl * 2,
-                      maxWidth: 440,
-                    ),
-                    child: Center(
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -148,7 +146,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         const SizedBox(height: AppSpacing.md),
 
                         OutlinedButton.icon(
-                          onPressed: auth.isSubmitting ? null : _pickDemoAccount,
+                          onPressed: auth.isSubmitting
+                              ? null
+                              : _pickDemoAccount,
                           icon: const Icon(Icons.people_outline, size: 18),
                           label: const Text('Use a demo account'),
                         ),
@@ -177,12 +177,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ],
                     ),
                   ),
-                    ),
-                  ),
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

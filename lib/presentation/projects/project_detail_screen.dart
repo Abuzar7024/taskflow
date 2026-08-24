@@ -306,13 +306,13 @@ class _TaskStatistics extends StatelessWidget {
                 for (final status in TaskStatus.values)
                   TagChip(
                     label: '${status.label} ${stats.byStatus[status] ?? 0}',
-                    color: status.color,
+                    color: status.color(theme),
                     dense: true,
                   ),
                 if (stats.overdue > 0)
                   TagChip(
                     label: '${stats.overdue} overdue',
-                    color: AppPalette.coral,
+                    color: AppColors.error,
                     icon: Icons.event_busy,
                     dense: true,
                   ),

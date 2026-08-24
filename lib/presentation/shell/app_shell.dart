@@ -21,6 +21,8 @@ class AppShell extends ConsumerWidget {
      selectedIcon: Icons.folder, label: 'Projects'),
     (route: Routes.tasks, icon: Icons.check_circle_outline,
      selectedIcon: Icons.check_circle, label: 'Tasks'),
+    (route: Routes.notifications, icon: Icons.notifications_none_rounded,
+     selectedIcon: Icons.notifications_rounded, label: 'Inbox'),
     (route: Routes.profile, icon: Icons.person_outline,
      selectedIcon: Icons.person, label: 'Profile'),
   ];

@@ -38,7 +38,7 @@ class _SkeletonBoxState extends State<SkeletonBox>
 
   @override
   Widget build(BuildContext context) {
-    final surfaces = Theme.of(context).surfaces;
+    final surfaces = Theme.of(context).c;
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) => Container(
@@ -187,32 +187,15 @@ class _StateGlyph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 108,
-      height: 108,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [tone.withValues(alpha: 0.22), Colors.transparent],
-              ),
-            ),
-          ),
-          Container(
-            width: 66,
-            height: 66,
-            decoration: BoxDecoration(
-              color: Theme.of(context).surfaces.tint(tone),
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: tone.withValues(alpha: 0.3)),
-            ),
-            child: Icon(icon, size: 30, color: tone),
-          ),
-        ],
+    // A restrained tinted square rather than an illustration or a large icon.
+    return Container(
+      width: 52,
+      height: 52,
+      decoration: BoxDecoration(
+        color: Theme.of(context).c.wash(tone),
+        borderRadius: BorderRadius.circular(AppRadius.md),
       ),
+      child: Icon(icon, size: 24, color: tone),
     );
   }
 }

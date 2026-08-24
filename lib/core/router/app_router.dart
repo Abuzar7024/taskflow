@@ -117,11 +117,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             ProjectFormScreen(projectId: state.pathParameters['id']),
       ),
       GoRoute(
-        path: Routes.notifications,
-        parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const NotificationsScreen(),
-      ),
-      GoRoute(
         path: Routes.developerTools,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const DeveloperToolsScreen(),
@@ -157,6 +152,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                     TaskDetailScreen(taskId: state.pathParameters['id']!),
               ),
             ],
+          ),
+          GoRoute(
+            path: Routes.notifications,
+            builder: (context, state) => const NotificationsScreen(),
           ),
           GoRoute(
             path: Routes.profile,

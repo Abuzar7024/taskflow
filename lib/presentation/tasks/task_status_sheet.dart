@@ -21,7 +21,7 @@ Future<void> showTaskStatusSheet(
       options: TaskStatus.values,
       current: task.status,
       labelOf: (s) => s.label,
-      colorOf: (s) => s.color,
+      colorOf: (s) => s.color(Theme.of(context)),
       iconOf: (s) => s.icon,
     ),
   );
@@ -55,7 +55,7 @@ Future<void> showTaskPrioritySheet(
       options: TaskPriority.values.reversed.toList(),
       current: task.priority,
       labelOf: (p) => p.label,
-      colorOf: (p) => p.color,
+      colorOf: (p) => p.color(Theme.of(context)),
       iconOf: (p) => p.icon,
     ),
   );

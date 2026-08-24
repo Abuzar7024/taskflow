@@ -153,7 +153,7 @@ class _TaskBody extends ConsumerWidget {
               children: [
                 _DetailRow(
                   icon: task.status.icon,
-                  iconColor: task.status.color,
+                  iconColor: task.status.color(theme),
                   label: 'Status',
                   value: task.status.label,
                   onTap: isBusy
@@ -163,7 +163,7 @@ class _TaskBody extends ConsumerWidget {
                 const Divider(height: 1),
                 _DetailRow(
                   icon: task.priority.icon,
-                  iconColor: task.priority.color,
+                  iconColor: task.priority.color(theme),
                   label: 'Priority',
                   value: task.priority.label,
                   onTap: isBusy
@@ -185,7 +185,7 @@ class _TaskBody extends ConsumerWidget {
                   icon: task.isOverdue(now)
                       ? Icons.event_busy
                       : Icons.event_outlined,
-                  iconColor: task.isOverdue(now) ? AppPalette.coral : null,
+                  iconColor: task.isOverdue(now) ? AppColors.error : null,
                   label: 'Due date',
                   value: task.dueDate == null
                       ? 'No due date'

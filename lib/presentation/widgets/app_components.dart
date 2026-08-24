@@ -12,7 +12,6 @@ class AppCard extends StatelessWidget {
     required this.child,
     this.padding = const EdgeInsets.all(AppSpacing.lg),
     this.onTap,
-    this.gradient,
     this.elevated = false,
     this.borderColor,
   });
@@ -20,25 +19,21 @@ class AppCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
   final VoidCallback? onTap;
-  final Gradient? gradient;
   final bool elevated;
   final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
-    final surfaces = Theme.of(context).surfaces;
+    final c = Theme.of(context).c;
 
     final decorated = AnimatedContainer(
       duration: AppMotion.fast,
       padding: padding,
       decoration: BoxDecoration(
-        color: gradient == null
-            ? (elevated ? surfaces.cardElevated : surfaces.card)
-            : null,
-        gradient: gradient,
+        color: elevated ? c.surfaceRaised : c.surface,
         borderRadius: AppRadius.card,
-        border: Border.all(color: borderColor ?? surfaces.border),
-        boxShadow: elevated ? surfaces.raisedShadow : surfaces.cardShadow,
+        border: Border.all(color: borderColor ?? c.border),
+        boxShadow: elevated ? c.softShadow : null,
       ),
       child: child,
     );
@@ -65,7 +60,7 @@ class AppChip extends StatelessWidget {
     Color? color,
     this.icon,
     this.dense = false,
-  }) : tone = tone ?? color ?? AppPalette.slate;
+  }) : tone = tone ?? color ?? AppColors.mutedText;
 
   final String label;
   final Color tone;
@@ -81,7 +76,7 @@ class AppChip extends StatelessWidget {
         vertical: dense ? AppSpacing.xxs : AppSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: theme.surfaces.tint(tone),
+        color: theme.c.wash(tone),
         borderRadius: AppRadius.chip,
         border: Border.all(color: tone.withValues(alpha: 0.28)),
       ),
@@ -129,8 +124,7 @@ class AppAvatar extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: theme.surfaces.tint(accent),
-        border: Border.all(color: accent.withValues(alpha: 0.3)),
+        color: theme.c.wash(accent),
         image: imageUrl == null
             ? null
             : DecorationImage(
@@ -188,7 +182,7 @@ class AppAvatarStack extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: theme.surfaces.card, width: 2),
+                  border: Border.all(color: theme.c.canvas, width: 2),
                 ),
                 child: AppAvatar(initials: shown[i], size: size),
               ),
@@ -201,8 +195,8 @@ class AppAvatarStack extends StatelessWidget {
                 height: size,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: theme.surfaces.cardElevated,
-                  border: Border.all(color: theme.surfaces.card, width: 2),
+                  color: theme.c.surfaceRaised,
+                  border: Border.all(color: theme.c.canvas, width: 2),
                 ),
                 alignment: Alignment.center,
                 child: Text(
@@ -225,15 +219,13 @@ class AppProgressBar extends StatelessWidget {
   const AppProgressBar({
     super.key,
     required this.value,
-    this.height = 8,
+    this.height = 6,
     this.tone,
-    this.gradient,
   });
 
   final double value;
   final double height;
   final Color? tone;
-  final Gradient? gradient;
 
   @override
   Widget build(BuildContext context) {
@@ -244,7 +236,7 @@ class AppProgressBar extends StatelessWidget {
       borderRadius: BorderRadius.circular(height),
       child: Stack(
         children: [
-          Container(height: height, color: theme.surfaces.border),
+          Container(height: height, color: theme.c.border),
           LayoutBuilder(
             builder: (context, constraints) => AnimatedContainer(
               duration: AppMotion.slow,
@@ -252,8 +244,7 @@ class AppProgressBar extends StatelessWidget {
               height: height,
               width: constraints.maxWidth * value.clamp(0.0, 1.0),
               decoration: BoxDecoration(
-                color: gradient == null ? accent : null,
-                gradient: gradient,
+                color: accent,
                 borderRadius: BorderRadius.circular(height),
               ),
             ),
@@ -325,7 +316,7 @@ class AppIconTile extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: Theme.of(context).surfaces.tint(tone),
+        color: Theme.of(context).c.wash(tone),
         borderRadius: BorderRadius.circular(size * 0.32),
       ),
       child: Icon(icon, color: tone, size: size * 0.5),
@@ -448,7 +439,7 @@ void showAppSnackBar(
               isError
                   ? Icons.error_outline_rounded
                   : Icons.check_circle_outline_rounded,
-              color: isError ? theme.colorScheme.error : AppPalette.emerald,
+              color: isError ? theme.colorScheme.error : AppColors.success,
               size: 20,
             ),
             const SizedBox(width: AppSpacing.md),

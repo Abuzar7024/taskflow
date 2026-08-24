@@ -244,7 +244,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                                 Icon(
                                   status.icon,
                                   size: 18,
-                                  color: status.color,
+                                  color: status.color(Theme.of(context)),
                                 ),
                                 const SizedBox(width: AppSpacing.sm),
                                 Text(status.label),
@@ -272,7 +272,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                                 Icon(
                                   priority.icon,
                                   size: 18,
-                                  color: priority.color,
+                                  color: priority.color(Theme.of(context)),
                                 ),
                                 const SizedBox(width: AppSpacing.sm),
                                 Text(priority.label),

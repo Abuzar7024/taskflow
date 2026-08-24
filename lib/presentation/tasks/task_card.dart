@@ -129,7 +129,12 @@ class _StatusButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final icon = Icon(task.status.icon, size: 20, color: task.status.color);
+    final theme = Theme.of(context);
+    final icon = Icon(
+      task.status.icon,
+      size: 20,
+      color: task.status.color(theme),
+    );
 
     if (onTap == null) return Padding(padding: const EdgeInsets.all(2), child: icon);
 

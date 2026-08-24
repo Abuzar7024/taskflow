@@ -1,45 +1,45 @@
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/enums.dart';
-import 'app_tokens.dart';
+import 'app_colors.dart';
 
-/// Semantic colours for task state. Hues are shared across themes so a status
-/// reads the same in light and dark.
+/// Restrained status colour coding: blue for active work, green for done,
+/// amber for attention, red for overdue or urgent.
 extension TaskStatusColors on TaskStatus {
-  Color get color => switch (this) {
-    TaskStatus.todo => AppPalette.slate,
-    TaskStatus.inProgress => AppPalette.electric,
-    TaskStatus.review => AppPalette.amber,
-    TaskStatus.done => AppPalette.emerald,
+  Color color(ThemeData theme) => switch (this) {
+    TaskStatus.todo => theme.c.textMuted,
+    TaskStatus.inProgress => theme.c.primary,
+    TaskStatus.review => theme.c.warning,
+    TaskStatus.done => theme.c.success,
   };
 
   IconData get icon => switch (this) {
     TaskStatus.todo => Icons.circle_outlined,
-    TaskStatus.inProgress => Icons.play_circle_outline_rounded,
+    TaskStatus.inProgress => Icons.timelapse_rounded,
     TaskStatus.review => Icons.visibility_outlined,
     TaskStatus.done => Icons.check_circle_rounded,
   };
 }
 
 extension TaskPriorityColors on TaskPriority {
-  Color get color => switch (this) {
-    TaskPriority.low => AppPalette.slate,
-    TaskPriority.medium => AppPalette.cyan,
-    TaskPriority.high => AppPalette.amber,
-    TaskPriority.urgent => AppPalette.coral,
+  Color color(ThemeData theme) => switch (this) {
+    TaskPriority.low => theme.c.textMuted,
+    TaskPriority.medium => theme.c.primary,
+    TaskPriority.high => theme.c.warning,
+    TaskPriority.urgent => theme.c.error,
   };
 
   IconData get icon => switch (this) {
     TaskPriority.low => Icons.south_rounded,
     TaskPriority.medium => Icons.remove_rounded,
     TaskPriority.high => Icons.north_rounded,
-    TaskPriority.urgent => Icons.bolt_rounded,
+    TaskPriority.urgent => Icons.priority_high_rounded,
   };
 }
 
 extension ProjectStatusColors on ProjectStatus {
-  Color get color => switch (this) {
-    ProjectStatus.active => AppPalette.emerald,
-    ProjectStatus.archived => AppPalette.slate,
+  Color color(ThemeData theme) => switch (this) {
+    ProjectStatus.active => theme.c.success,
+    ProjectStatus.archived => theme.c.textMuted,
   };
 }
