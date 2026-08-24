@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/errors/app_exception.dart';
 import '../../core/router/app_router.dart';
-import '../../core/theme/app_theme.dart';
+import '../../core/theme/app_tokens.dart';
 import '../../core/theme/status_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../domain/entities/entities.dart';
@@ -45,7 +45,7 @@ class TaskDetailScreen extends ConsumerWidget {
         ],
       ),
       body: task.when(
-        loading: () => const LoadingView(label: 'Loading task…'),
+        loading: () => const LoadingView(message: 'Loading task…'),
         error: (error, _) => ErrorStateView(
           message: messageFor(error),
           onRetry: () => ref.invalidate(taskByIdProvider(taskId)),
@@ -185,7 +185,7 @@ class _TaskBody extends ConsumerWidget {
                   icon: task.isOverdue(now)
                       ? Icons.event_busy
                       : Icons.event_outlined,
-                  iconColor: task.isOverdue(now) ? AppColors.overdue : null,
+                  iconColor: task.isOverdue(now) ? AppPalette.coral : null,
                   label: 'Due date',
                   value: task.dueDate == null
                       ? 'No due date'

@@ -4,8 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/errors/app_exception.dart';
 import '../../core/router/app_router.dart';
-import '../../core/theme/app_theme.dart';
-import '../../core/theme/status_colors.dart';
+import '../../core/theme/app_tokens.dart';
 import '../../core/utils/formatters.dart';
 import '../../domain/entities/entities.dart';
 import '../../domain/entities/enums.dart';
@@ -221,25 +220,25 @@ class _StatsGrid extends StatelessWidget {
       (
         label: 'Projects',
         value: '${data.projectCount}',
-        color: AppColors.inProgress,
+        color: AppPalette.electric,
         icon: Icons.folder_outlined,
       ),
       (
         label: 'Open tasks',
         value: '${stats.open}',
-        color: AppColors.review,
+        color: AppPalette.amber,
         icon: Icons.pending_actions,
       ),
       (
         label: 'Completed',
         value: '${stats.completed}',
-        color: AppColors.done,
+        color: AppPalette.emerald,
         icon: Icons.task_alt,
       ),
       (
         label: 'Overdue',
         value: '${stats.overdue}',
-        color: AppColors.overdue,
+        color: AppPalette.coral,
         icon: Icons.event_busy,
       ),
     ];
@@ -298,7 +297,7 @@ class _StatTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.sm),
               decoration: BoxDecoration(
-                color: tintFor(color, theme.brightness),
+                color: Theme.of(context).surfaces.tint(color),
                 borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               child: Icon(icon, size: 16, color: color),

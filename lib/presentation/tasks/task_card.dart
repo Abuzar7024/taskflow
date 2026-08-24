@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/theme/app_theme.dart';
+import '../../core/theme/app_tokens.dart';
 import '../../core/theme/status_colors.dart';
 import '../../domain/entities/entities.dart';
 import '../providers.dart';
@@ -100,8 +100,8 @@ class TaskCard extends ConsumerWidget {
                 runSpacing: AppSpacing.sm,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  StatusChip(task.status, dense: true),
-                  PriorityChip(task.priority, dense: true),
+                  StatusChip(status: task.status, dense: true),
+                  PriorityChip(priority: task.priority, dense: true),
                   if (task.dueDate != null)
                     DueDateChip(
                       dueDate: task.dueDate!,

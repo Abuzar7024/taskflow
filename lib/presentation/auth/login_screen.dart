@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/router/app_router.dart';
-import '../../core/theme/app_theme.dart';
+import '../../core/theme/app_tokens.dart';
 import '../../core/utils/validators.dart';
 import '../widgets/brand.dart';
 import '../widgets/common.dart';
@@ -62,17 +62,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.xl),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight - AppSpacing.xl * 2,
-                  maxWidth: 440,
-                ),
+      body: AuroraBackground(
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(AppSpacing.xl),
                 child: Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight - AppSpacing.xl * 2,
+                      maxWidth: 440,
+                    ),
+                    child: Center(
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -81,7 +83,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       children: [
                         const BrandHeader(
                           title: 'Welcome back',
-                          subtitle: 'Sign in to pick up where you left off.',
+                          subtitle:
+                              'Manage projects. Organize tasks. Get work done.',
                         ),
                         const SizedBox(height: AppSpacing.xxl),
 
@@ -174,10 +177,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ],
                     ),
                   ),
+                    ),
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/errors/app_exception.dart';
 import '../../core/router/app_router.dart';
-import '../../core/theme/app_theme.dart';
+import '../../core/theme/app_tokens.dart';
 import '../../core/theme/status_colors.dart';
 import '../../core/utils/formatters.dart';
 import '../../domain/entities/entities.dart';
@@ -77,7 +77,7 @@ class ProjectDetailScreen extends ConsumerWidget {
             )
           : null,
       body: project.when(
-        loading: () => const LoadingView(label: 'Loading project…'),
+        loading: () => const LoadingView(message: 'Loading project…'),
         error: (error, _) => ErrorStateView(
           message: messageFor(error),
           onRetry: () => ref.invalidate(projectByIdProvider(projectId)),
@@ -297,7 +297,7 @@ class _TaskStatistics extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AppSpacing.md),
-            CompletionBar(value: stats.completionRate),
+            CompletionBar(value: stats.completionRate, showCaption: false),
             const SizedBox(height: AppSpacing.lg),
             Wrap(
               spacing: AppSpacing.sm,
@@ -312,7 +312,7 @@ class _TaskStatistics extends StatelessWidget {
                 if (stats.overdue > 0)
                   TagChip(
                     label: '${stats.overdue} overdue',
-                    color: AppColors.overdue,
+                    color: AppPalette.coral,
                     icon: Icons.event_busy,
                     dense: true,
                   ),

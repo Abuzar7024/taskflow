@@ -1,142 +1,18 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_theme.dart';
+import '../../core/theme/app_tokens.dart';
+import 'app_components.dart';
 
-/// Empty state: an icon, a headline, a sentence telling the user what to do,
-/// and an optional action.
-class EmptyState extends StatelessWidget {
-  const EmptyState({
-    required this.icon,
-    required this.title,
-    required this.message,
-    this.actionLabel,
-    this.onAction,
-    super.key,
-  });
-
-  final IconData icon;
-  final String title;
-  final String message;
-  final String? actionLabel;
-  final VoidCallback? onAction;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 360),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.10),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, size: 32, color: theme.colorScheme.primary),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                title,
-                style: theme.textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                message,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              if (actionLabel != null && onAction != null) ...[
-                const SizedBox(height: AppSpacing.xl),
-                FilledButton(onPressed: onAction, child: Text(actionLabel!)),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Error state with a human message and a retry affordance.
-class ErrorStateView extends StatelessWidget {
-  const ErrorStateView({
-    required this.message,
-    this.onRetry,
-    this.title = 'Something went wrong',
-    this.icon = Icons.error_outline,
-    super.key,
-  });
-
-  final String message;
-  final VoidCallback? onRetry;
-  final String title;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 360),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.error.withValues(alpha: 0.10),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, size: 32, color: theme.colorScheme.error),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                title,
-                style: theme.textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                message,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              if (onRetry != null) ...[
-                const SizedBox(height: AppSpacing.xl),
-                FilledButton.icon(
-                  onPressed: onRetry,
-                  icon: const Icon(Icons.refresh, size: 18),
-                  label: const Text('Try again'),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Grey block used to compose skeleton placeholders, with a subtle shimmer so
-/// loading reads as intentional rather than broken.
+/// A shimmering placeholder block.
+///
+/// The shimmer repeats indefinitely, which is why widget tests use bounded
+/// `pump` calls rather than `pumpAndSettle`.
 class SkeletonBox extends StatefulWidget {
   const SkeletonBox({
+    super.key,
     this.width,
     this.height = 14,
-    this.radius = AppRadius.sm,
-    super.key,
+    this.radius = AppRadius.xs,
   });
 
   final double? width;
@@ -162,88 +38,329 @@ class _SkeletonBoxState extends State<SkeletonBox>
 
   @override
   Widget build(BuildContext context) {
-    final base = Theme.of(context).colorScheme.onSurface;
+    final surfaces = Theme.of(context).surfaces;
     return AnimatedBuilder(
       animation: _controller,
-      builder: (context, _) {
-        return Container(
-          width: widget.width,
-          height: widget.height,
-          decoration: BoxDecoration(
-            color: base.withValues(alpha: 0.05 + (_controller.value * 0.05)),
-            borderRadius: BorderRadius.circular(widget.radius),
-          ),
-        );
-      },
-    );
-  }
-}
-
-/// Placeholder list shown while tasks or projects load.
-class SkeletonList extends StatelessWidget {
-  const SkeletonList({this.itemCount = 5, this.itemHeight = 96, super.key});
-
-  final int itemCount;
-  final double itemHeight;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      itemCount: itemCount,
-      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
-      itemBuilder: (context, _) => Container(
-        height: itemHeight,
-        padding: const EdgeInsets.all(AppSpacing.lg),
+      builder: (context, _) => Container(
+        width: widget.width,
+        height: widget.height,
         decoration: BoxDecoration(
-          color: Theme.of(context).cardTheme.color,
-          borderRadius: AppRadius.card,
-          border: Border.all(
-            color: Theme.of(context).colorScheme.outlineVariant,
+          color: Color.lerp(
+            surfaces.border,
+            surfaces.borderStrong,
+            _controller.value,
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SkeletonBox(width: 180, height: 16),
-            const SizedBox(height: AppSpacing.md),
-            const SkeletonBox(width: double.infinity, height: 12),
-            const Spacer(),
-            Row(
-              children: const [
-                SkeletonBox(width: 64, height: 20, radius: AppRadius.pill),
-                SizedBox(width: AppSpacing.sm),
-                SkeletonBox(width: 64, height: 20, radius: AppRadius.pill),
-              ],
-            ),
-          ],
+          borderRadius: BorderRadius.circular(widget.radius),
         ),
       ),
     );
   }
 }
 
-/// Full-screen loading used on detail screens.
-class LoadingView extends StatelessWidget {
-  const LoadingView({this.label, super.key});
+/// Skeleton shaped like a task or project card, so the transition to real
+/// content does not shift the layout.
+class SkeletonCard extends StatelessWidget {
+  const SkeletonCard({super.key, this.lines = 2, this.showFooter = true});
 
-  final String? label;
+  final int lines;
+  final bool showFooter;
 
   @override
   Widget build(BuildContext context) {
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const SkeletonBox(width: 44, height: 44, radius: AppRadius.md),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SkeletonBox(height: 15),
+                    const SizedBox(height: AppSpacing.sm),
+                    SkeletonBox(
+                      height: 12,
+                      width: MediaQuery.sizeOf(context).width * 0.35,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          for (var i = 0; i < lines; i++) ...[
+            const SizedBox(height: AppSpacing.md),
+            SkeletonBox(height: 11, width: i.isEven ? null : 200),
+          ],
+          if (showFooter) ...[
+            const SizedBox(height: AppSpacing.lg),
+            Row(
+              children: const [
+                SkeletonBox(width: 72, height: 24, radius: AppRadius.pill),
+                SizedBox(width: AppSpacing.sm),
+                SkeletonBox(width: 60, height: 24, radius: AppRadius.pill),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// A vertical run of skeleton cards used while a list loads.
+class SkeletonList extends StatelessWidget {
+  const SkeletonList({
+    super.key,
+    this.count = 4,
+    this.lines = 2,
+    this.itemHeight,
+  });
+
+  final int count;
+  final int lines;
+
+  /// Fixed row height for callers whose real rows are a known size.
+  final double? itemHeight;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      itemCount: count,
+      physics: const NeverScrollableScrollPhysics(),
+      separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
+      itemBuilder: (context, index) => itemHeight == null
+          ? SkeletonCard(lines: lines)
+          : SkeletonBox(height: itemHeight!, radius: AppRadius.lg),
+    );
+  }
+}
+
+/// Skeleton matching the dashboard's stat grid and list previews.
+class SkeletonDashboard extends StatelessWidget {
+  const SkeletonDashboard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SkeletonBox(height: 150, radius: AppRadius.lg),
+          const SizedBox(height: AppSpacing.lg),
+          Row(
+            children: const [
+              Expanded(child: SkeletonBox(height: 96, radius: AppRadius.lg)),
+              SizedBox(width: AppSpacing.md),
+              Expanded(child: SkeletonBox(height: 96, radius: AppRadius.lg)),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Row(
+            children: const [
+              Expanded(child: SkeletonBox(height: 96, radius: AppRadius.lg)),
+              SizedBox(width: AppSpacing.md),
+              Expanded(child: SkeletonBox(height: 96, radius: AppRadius.lg)),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          const SkeletonCard(lines: 1),
+          const SizedBox(height: AppSpacing.md),
+          const SkeletonCard(lines: 1),
+        ],
+      ),
+    );
+  }
+}
+
+/// Abstract decorative mark used by the empty and error states. Softer than a
+/// large stock icon, and themed rather than illustrative.
+class _StateGlyph extends StatelessWidget {
+  const _StateGlyph({required this.icon, required this.tone});
+
+  final IconData icon;
+  final Color tone;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 108,
+      height: 108,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [tone.withValues(alpha: 0.22), Colors.transparent],
+              ),
+            ),
+          ),
+          Container(
+            width: 66,
+            height: 66,
+            decoration: BoxDecoration(
+              color: Theme.of(context).surfaces.tint(tone),
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(color: tone.withValues(alpha: 0.3)),
+            ),
+            child: Icon(icon, size: 30, color: tone),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Designed empty state with a headline, guidance and an optional action.
+class EmptyState extends StatelessWidget {
+  const EmptyState({
+    super.key,
+    required this.title,
+    required this.message,
+    this.icon = Icons.inbox_rounded,
+    this.actionLabel,
+    this.onAction,
+  });
+
+  final String title;
+  final String message;
+  final IconData icon;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: AppFadeIn(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _StateGlyph(icon: icon, tone: theme.colorScheme.primary),
+              const SizedBox(height: AppSpacing.xl),
+              Text(
+                title,
+                style: theme.textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 320),
+                child: Text(
+                  message,
+                  style: theme.textTheme.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              if (actionLabel != null && onAction != null) ...[
+                const SizedBox(height: AppSpacing.xl),
+                SizedBox(
+                  width: 220,
+                  child: FilledButton.icon(
+                    onPressed: onAction,
+                    icon: const Icon(Icons.add_rounded, size: 20),
+                    label: Text(actionLabel!),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Error state with a human message and a retry affordance. Never renders a
+/// raw exception string.
+class ErrorStateView extends StatelessWidget {
+  const ErrorStateView({
+    super.key,
+    required this.message,
+    this.title = 'Something went wrong',
+    this.onRetry,
+    this.icon = Icons.cloud_off_rounded,
+  });
+
+  final String message;
+  final String title;
+  final VoidCallback? onRetry;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: AppFadeIn(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _StateGlyph(icon: icon, tone: theme.colorScheme.error),
+              const SizedBox(height: AppSpacing.xl),
+              Text(
+                title,
+                style: theme.textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 320),
+                child: Text(
+                  message,
+                  style: theme.textTheme.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              if (onRetry != null) ...[
+                const SizedBox(height: AppSpacing.xl),
+                SizedBox(
+                  width: 200,
+                  child: FilledButton.icon(
+                    onPressed: onRetry,
+                    icon: const Icon(Icons.refresh_rounded, size: 20),
+                    label: const Text('Try again'),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Centred spinner for the few places a skeleton would not fit.
+class LoadingView extends StatelessWidget {
+  const LoadingView({super.key, this.message});
+
+  final String? message;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const CircularProgressIndicator(),
-          if (label != null) ...[
+          const SizedBox(
+            width: 32,
+            height: 32,
+            child: CircularProgressIndicator(strokeWidth: 3),
+          ),
+          if (message != null) ...[
             const SizedBox(height: AppSpacing.lg),
-            Text(
-              label!,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
+            Text(message!, style: theme.textTheme.bodySmall),
           ],
         ],
       ),
