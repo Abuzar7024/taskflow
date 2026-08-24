@@ -30,11 +30,16 @@ mock one without touching the UI or business logic.
 - Sort by priority, due date, recency, or title
 - Comments per task
 
+**Design**
+- Blue + cream visual identity, flat surfaces, no gradients
+- Light and dark palettes designed independently, following the device theme
+- Centralised design system: colours, typography, spacing, radii, components
+
 **Platform behaviour**
 - Simulated offline mode: cached data stays visible, mutations are blocked, staleness is labelled
 - Six reviewer-triggerable error simulations
-- Light and dark themes
-- Bottom navigation on phones, a navigation rail on tablets
+- Light and dark themes that follow the device setting, with a manual override
+- Bottom navigation (Home, Projects, Tasks, Inbox, Profile); a rail on tablets
 
 ---
 
@@ -152,7 +157,7 @@ lib/
     errors/      the AppException hierarchy and user-facing messages
     router/      go_router configuration and auth redirects
     storage/     secure storage (tokens) and preferences (cache, settings)
-    theme/       design tokens, light/dark themes, semantic colours
+    theme/       app_colors, app_typography, app_spacing, app_radius, themes
     utils/       date formatting, validators
   data/
     datasources/ MockDataSource — the fake backend
@@ -232,8 +237,13 @@ scope and would need conflict resolution to be honest.
 `flutter analyze` reports no issues, `flutter test` passes all 175 tests, and
 `flutter build apk --release` produces a signed APK.
 
-The application was **not launched on a device or emulator** during development, so on-device
-rendering, plugin behaviour at runtime, gesture feel, and real keyboard/rotation handling are
-unverified. Widget tests assert that key screens lay out without overflow at several sizes,
-which substitutes for — but does not equal — visual inspection. See the "Verification method
-and limits" section of [REQUIREMENTS.md](REQUIREMENTS.md).
+The app has been **run on a physical device** (Samsung Galaxy S24, Android 16): login, session
+restore, the dashboard, project and task lists all render and resolve correctly, with no
+runtime exceptions in logcat.
+
+Not verified: tablet and landscape layouts on real hardware, iOS, and the full matrix of
+simulated error states on-device — those are covered by the test suite rather than by manual
+device testing.
+
+Note on the seed data: every task's due date precedes the current date, so most open tasks
+legitimately report as overdue.
