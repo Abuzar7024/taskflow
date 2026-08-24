@@ -119,7 +119,10 @@ class AppSettingsTile extends StatelessWidget {
           children: [
             Icon(icon, size: 20, color: accent),
             const SizedBox(width: AppSpacing.lg),
+            // The label gets first claim on the space but still yields on a
+            // narrow screen, so neither side can overflow the row.
             Flexible(
+              flex: 3,
               child: Text(
                 label,
                 overflow: TextOverflow.ellipsis,

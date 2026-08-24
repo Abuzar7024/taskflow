@@ -45,7 +45,7 @@ class ProfileScreen extends ConsumerWidget {
               children: [
                 AppSettingsTile(
                   icon: Icons.person_outline_rounded,
-                  label: 'Profile information',
+                  label: 'Profile',
                   onTap: () => context.push(Routes.accountSettings),
                 ),
                 AppSettingsTile(
