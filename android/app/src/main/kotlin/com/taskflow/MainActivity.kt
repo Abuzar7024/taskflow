@@ -1,4 +1,4 @@
-package com.taskflow.taskflow
+package com.taskflow
 
 import io.flutter.embedding.android.FlutterActivity
 
