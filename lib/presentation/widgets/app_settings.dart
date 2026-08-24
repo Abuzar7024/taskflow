@@ -119,9 +119,10 @@ class AppSettingsTile extends StatelessWidget {
           children: [
             Icon(icon, size: 20, color: accent),
             const SizedBox(width: AppSpacing.lg),
-            Expanded(
+            Flexible(
               child: Text(
                 label,
+                overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: tone ?? c.text,
                   fontWeight: FontWeight.w500,
@@ -129,10 +130,20 @@ class AppSettingsTile extends StatelessWidget {
               ),
             ),
             if (value != null)
-              Padding(
-                padding: const EdgeInsets.only(left: AppSpacing.sm),
-                child: Text(value!, style: theme.textTheme.bodyMedium),
-              ),
+              Flexible(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: AppSpacing.md),
+                  child: Text(
+                    value!,
+                    textAlign: TextAlign.end,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                ),
+              )
+            else
+              const Spacer(),
             if (trailing != null) trailing!,
             if (trailing == null && onTap != null && showChevron) ...[
               const SizedBox(width: AppSpacing.xs),
