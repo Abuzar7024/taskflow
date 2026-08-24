@@ -7,6 +7,7 @@ import '../../core/router/app_router.dart';
 import '../../core/theme/app_tokens.dart';
 import '../../core/utils/formatters.dart';
 import '../../domain/entities/entities.dart';
+import '../../core/theme/status_colors.dart';
 import '../../domain/entities/enums.dart';
 import '../auth/auth_controller.dart';
 import '../notifications/notification_providers.dart';
@@ -145,6 +146,13 @@ class _DashboardBody extends ConsumerWidget {
                 child: _MiniProjectCard(project: project),
               ),
 
+          if (data.upcoming.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.lg),
+            const SectionHeader(title: 'Upcoming'),
+            const SizedBox(height: AppSpacing.sm),
+            _UpcomingList(tasks: data.upcoming),
+          ],
+
           const SizedBox(height: AppSpacing.lg),
           _QuickActions(hasProjects: data.projects.isNotEmpty),
         ],
@@ -162,10 +170,9 @@ class _OrgCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Row(
+    return AppCard(
+      child: Builder(
+        builder: (context) => Row(
           children: [
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
@@ -287,10 +294,9 @@ class _StatTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
+    return AppCard(
+      child: Builder(
+        builder: (context) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -426,10 +432,9 @@ class _InlineEmpty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Row(
+    return AppCard(
+      child: Builder(
+        builder: (context) => Row(
           children: [
             Icon(icon, size: 20, color: theme.colorScheme.onSurfaceVariant),
             const SizedBox(width: AppSpacing.md),
@@ -499,6 +504,77 @@ class _DashboardSkeleton extends StatelessWidget {
         const SizedBox(height: AppSpacing.md),
         const SkeletonBox(width: double.infinity, height: 92),
       ],
+    );
+  }
+}
+
+/// Deadlines coming up, grouped as one compact surface rather than a card
+/// per row — they are a glance, not a workspace.
+class _UpcomingList extends ConsumerWidget {
+  const _UpcomingList({required this.tasks});
+
+  final List<Task> tasks;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final now = ref.watch(clockProvider)();
+    final directory = ref
+        .watch(userDirectoryProvider)
+        .maybeWhen(data: (d) => d, orElse: () => const <String, User>{});
+
+    return AppCard(
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          for (var i = 0; i < tasks.length; i++) ...[
+            if (i > 0) Divider(height: 1, color: theme.c.border),
+            InkWell(
+              onTap: () => context.push(Routes.task(tasks[i].id)),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg,
+                  vertical: AppSpacing.md,
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 3,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: tasks[i].priority.color(theme),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            tasks[i].title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleSmall,
+                          ),
+                          const SizedBox(height: AppSpacing.xxs),
+                          Text(
+                            directory[tasks[i].assigneeId]?.name ??
+                                'Unassigned',
+                            style: theme.textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    DueDateChip(task: tasks[i], now: now, dense: true),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

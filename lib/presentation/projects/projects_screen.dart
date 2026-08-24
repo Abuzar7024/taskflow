@@ -50,7 +50,74 @@ class ProjectsScreen extends ConsumerWidget {
                       actionLabel: 'Create a project',
                       onAction: () => context.push(Routes.newProject()),
                     )
-                  : RefreshIndicator(
+                  : _ProjectList(projects: items),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Search and sort over the loaded projects, then the list itself.
+class _ProjectList extends ConsumerWidget {
+  const _ProjectList({required this.projects});
+
+  final List<Project> projects;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final query = ref.watch(projectQueryProvider);
+    final sort = ref.watch(projectSortProvider);
+    final visible = searchAndSortProjects(projects, query, sort);
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.sm,
+            AppSpacing.lg,
+            AppSpacing.md,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  onChanged: (value) =>
+                      ref.read(projectQueryProvider.notifier).state = value,
+                  textInputAction: TextInputAction.search,
+                  decoration: InputDecoration(
+                    hintText: 'Search projects',
+                    prefixIcon: const Icon(Icons.search_rounded, size: 20),
+                    suffixIcon: query.isEmpty
+                        ? null
+                        : IconButton(
+                            tooltip: 'Clear search',
+                            icon: const Icon(Icons.close_rounded, size: 18),
+                            onPressed: () => ref
+                                .read(projectQueryProvider.notifier)
+                                .state = '',
+                          ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              _SortButton(sort: sort),
+            ],
+          ),
+        ),
+        Expanded(
+          child: visible.isEmpty
+              ? EmptyState(
+                  art: AppArt.projects,
+                  title: 'No projects found',
+                  message: 'Try a different search term.',
+                  actionLabel: 'Clear search',
+                  onAction: () =>
+                      ref.read(projectQueryProvider.notifier).state = '',
+                )
+              : RefreshIndicator(
                       onRefresh: () async {
                         ref.invalidate(projectsProvider);
                         await ref.read(projectsProvider.future);
@@ -63,15 +130,45 @@ class ProjectsScreen extends ConsumerWidget {
                           // Room for the FAB.
                           AppSpacing.xxl * 2.5,
                         ),
-                        itemCount: items.length,
+                        itemCount: visible.length,
                         separatorBuilder: (_, _) =>
                             const SizedBox(height: AppSpacing.md),
                         itemBuilder: (context, index) =>
-                            ProjectCard(project: items[index]),
+                            ProjectCard(project: visible[index]),
                       ),
                     ),
-            ),
-          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Sort selector, presented as a menu so it costs one tap and no screen space.
+class _SortButton extends ConsumerWidget {
+  const _SortButton({required this.sort});
+
+  final ProjectSort sort;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final c = Theme.of(context).c;
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: c.border),
+        borderRadius: AppRadius.field,
+        color: c.surface,
+      ),
+      child: PopupMenuButton<ProjectSort>(
+        initialValue: sort,
+        tooltip: 'Sort projects',
+        position: PopupMenuPosition.under,
+        icon: Icon(Icons.swap_vert_rounded, size: 20, color: c.textMuted),
+        onSelected: (value) =>
+            ref.read(projectSortProvider.notifier).state = value,
+        itemBuilder: (context) => [
+          for (final option in ProjectSort.values)
+            PopupMenuItem(value: option, child: Text(option.label)),
         ],
       ),
     );
