@@ -81,7 +81,7 @@ flutter test test/integration     # end-to-end flows
 flutter analyze                   # static analysis
 ```
 
-175 tests covering session and token logic, authorization, filtering, validation, repository
+176 tests covering session and token logic, authorization, filtering, validation, repository
 behaviour, the loading/empty/error/success states, and end-to-end flows. No test touches a
 real network.
 
@@ -145,8 +145,8 @@ MockDataSource                     ← the bundled JSON, latency + failure simul
 assets/data/mock_data.json
 ```
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the full picture, and
-[REQUIREMENTS.md](REQUIREMENTS.md) for the feature checklist.
+The presentation layer depends only on the repository interfaces, so the mock implementations
+could be swapped for HTTP-backed ones without touching the UI or the business logic.
 
 ### Folder structure
 
@@ -234,7 +234,7 @@ scope and would need conflict resolution to be honest.
 
 ## Verification
 
-`flutter analyze` reports no issues, `flutter test` passes all 175 tests, and
+`flutter analyze` reports no issues, `flutter test` passes all 176 tests, and
 `flutter build apk --release` produces a signed APK.
 
 The app has been **run on a physical device** (Samsung Galaxy S24, Android 16): login, session
